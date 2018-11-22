@@ -2,10 +2,12 @@ package com.kingj.plugin
 
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
+//import com.netease.plugin.util.ClassUtil
+//import javassist.ClassPool
 import javassist.CtClass
 import javassist.CtMethod
 import org.gradle.api.Project
-
+import org.apache.commons.io.FileUtils
 /**
  * Created by Jin on 2018/8/1.
  * Description

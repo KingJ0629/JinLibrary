@@ -18,7 +18,7 @@ public class MyInjects {
         //引入android.os.Bundle包，因为onCreate方法参数有Bundle
         pool.importPackage("android.os.Bundle");
 
-        File dir = new File(path);
+        File dir = new File(path)
         if (dir.isDirectory()) {
             //遍历文件夹
             dir.eachFileRecurse { File file ->
