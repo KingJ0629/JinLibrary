@@ -9,16 +9,12 @@ class GroovyPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-//        WriteHelloTask task = project.getTasks().create("writeHello", WriteHelloTask.class)
-//        task.setFileName("HelloWorld.txt")
-//        task.setTargetDirectory(new File("D:/gradlePlugin"))
-//        task.setGroup("yeshello")
-//
-//        project.task('buhello') << {
-//            println 'hello, world!'
-//        }
+        //AppExtension就是build.gradle中android{...}这一块
+        def android = project.extensions.getByType(AppExtension)
 
-        createFile(project)
+        //注册一个Transform
+        def classTransform = new TestTransform(project)
+        android.registerTransform(classTransform)
     }
 
     void searchRepeat(Project project) {
@@ -61,12 +57,12 @@ class GroovyPlugin implements Plugin<Project> {
                     }
                 }
                 //设置task依赖于生成BuildConfig的task，然后在生成BuildConfig后生成我们的类
-                String generateBuildConfigTaskName = variant.getVariantData().getScope().getGenerateBuildConfigTask().name
-                def generateBuildConfigTask = project.tasks.getByName(generateBuildConfigTaskName)
-                if (generateBuildConfigTask) {
-                    createTask.dependsOn generateBuildConfigTask
-                    generateBuildConfigTask.finalizedBy createTask
-                }
+//                String generateBuildConfigTaskName = variant.getVariantData().getTaskContainer().getGenerateBuildConfigTask().name
+//                def generateBuildConfigTask = project.tasks.getByName(generateBuildConfigTaskName)
+//                if (generateBuildConfigTask) {
+//                    createTask.dependsOn generateBuildConfigTask
+//                    generateBuildConfigTask.finalizedBy createTask
+//                }
             }
         }
 
@@ -74,47 +70,47 @@ class GroovyPlugin implements Plugin<Project> {
     }
 
     void createFile(Project project) {
-        System.out.println("------------------开始----------------------");
-        System.out.println("这是我们的自定义插件!!!!!!!!");
+        System.out.println("------------------开始----------------------")
+        System.out.println("这是我们的自定义插件!!!!!!!!单纯注入transform")
         //AppExtension就是build.gradle中android{...}这一块
         def android = project.extensions.getByType(AppExtension)
 
         //注册一个Transform
-        def classTransform = new MyClassTransform(project)
+        def classTransform = new TestTransform(project)
         android.registerTransform(classTransform)
-
-        //创建一个Extension，名字叫做testCreatJavaConfig 里面可配置的属性参照MyPlguinTestClass
-        project.extensions.create("testCreateJavaConfig", MyPluginTestClass)
-
-        //生产一个类
-        if (project.plugins.hasPlugin(AppPlugin)) {
-            //获取到Extension，Extension就是 build.gradle中的{}闭包
-            android.applicationVariants.all { variant ->
-                //获取到scope,作用域
-                def variantData = variant.variantData
-                def scope = variantData.scope
-
-                //拿到build.gradle中创建的Extension的值
-                def config = project.extensions.getByName("testCreateJavaConfig");
-
-                //创建一个task
-                def createTaskName = scope.getTaskName("CeShi", "MyTestPlugin")
-                def createTask = project.task(createTaskName)
-                //设置task要执行的任务
-                createTask.doLast {
-                    //生成java类
-                    createJavaTest(variant, config)
-                }
-                //设置task依赖于生成BuildConfig的task，然后在生成BuildConfig后生成我们的类
-                String generateBuildConfigTaskName = variant.getVariantData().getScope().getGenerateBuildConfigTask().name
-                def generateBuildConfigTask = project.tasks.getByName(generateBuildConfigTaskName)
-                if (generateBuildConfigTask) {
-                    createTask.dependsOn generateBuildConfigTask
-                    generateBuildConfigTask.finalizedBy createTask
-                }
-            }
-
-        }
+//
+//        //创建一个Extension，名字叫做testCreateJavaConfig 里面可配置的属性参照MyPlguinTestClass
+//        project.extensions.create("testCreateJavaConfig", MyPluginTestClass)
+//
+//        //生产一个类
+//        if (project.plugins.hasPlugin(AppPlugin)) {
+//            //获取到Extension，Extension就是 build.gradle中的{}闭包
+//            android.applicationVariants.all { variant ->
+//                //获取到scope,作用域
+//                def variantData = variant.variantData
+//                def scope = variantData.scope
+//
+//                //拿到build.gradle中创建的Extension的值
+//                def config = project.extensions.getByName("testCreateJavaConfig")
+//
+//                //创建一个task
+//                def createTaskName = scope.getTaskName("CeShi", "MyTestPlugin")
+//                def createTask = project.task(createTaskName)
+//                //设置task要执行的任务
+//                createTask.doLast {
+//                    //生成java类
+//                    createJavaTest(variant, config)
+//                }
+//                //设置task依赖于生成BuildConfig的task，然后在生成BuildConfig后生成我们的类
+//                String generateBuildConfigTaskName = variant.getVariantData().getTaskContainer().getGenerateBuildConfigTask().name
+//                def generateBuildConfigTask = project.tasks.getByName(generateBuildConfigTaskName)
+//                if (generateBuildConfigTask) {
+//                    createTask.dependsOn generateBuildConfigTask
+//                    generateBuildConfigTask.finalizedBy createTask
+//                }
+//            }
+//
+//        }
         System.out.println("------------------结束了吗----------------------");
     }
 
